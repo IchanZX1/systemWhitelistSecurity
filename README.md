@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![GitHub](https://img.shields.io/badge/ichanzx1-GitHub-blue?style=for-the-badge&logo=github)](https://github.com/ichanzx1)
 
-<img src="./assets/banner.png" width="100%" alt="API Whitelist Manager Banner">
+<img url="https://i.pinimg.com/1200x/25/de/08/25de085a05af6384183245b514943133.jpg">
 
 *A sleek and simple system to manage authorized access to your APIs efficiently.*
 
