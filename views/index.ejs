@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Whitelist System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .mobile-wrapper {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 900px;
+            background: white;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 640px) {
+            .mobile-wrapper {
+                border-radius: 2rem;
+                height: 850px;
+                border: 8px solid #1f2937;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-100vh) translateX(20px);
+                opacity: 0;
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+        }
+
+        @keyframes shake {
+
+            10%,
+            90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            20%,
+            80% {
+                transform: translate3d(2px, 0, 0);
+            }
+
+            30%,
+            50%,
+            70% {
+                transform: translate3d(-4px, 0, 0);
+            }
+
+            40%,
+            60% {
+                transform: translate3d(4px, 0, 0);
+            }
+        }
+
+        .login-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="mobile-wrapper" id="app">
+        <!-- PAGE: LOGIN -->
+        <div id="loginPage"
+            class="absolute inset-0 z-50 login-gradient flex flex-col items-center justify-center p-8 transition-all duration-500">
+            <div id="particles" class="absolute inset-0 overflow-hidden"></div>
+
+            <div class="relative z-10 w-full bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 shadow-2xl transition-transform"
+                id="loginCard">
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="bi bi-shield-lock-fill text-blue-600 text-3xl"></i>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">Selamat Datang</h1>
+                    <p class="text-blue-100 text-sm">Silahkan login ke dashboard</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-blue-100 mb-1 ml-1">Username</label>
+                        <div class="relative">
+                            <i class="bi bi-person absolute left-3 top-1/2 -translate-y-1/2 text-white/60"></i>
+                            <input type="text" id="username"
+                                class="w-full bg-white/10 border border-white/20 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50"
+                                placeholder="admin">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-blue-100 mb-1 ml-1">Password</label>
+                        <div class="relative">
+                            <i class="bi bi-key absolute left-3 top-1/2 -translate-y-1/2 text-white/60"></i>
+                            <input type="password" id="password"
+                                class="w-full bg-white/10 border border-white/20 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/50"
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <p id="errorMsg" class="text-red-300 text-xs text-center hidden font-medium">Username atau Password
+                        salah!</p>
+
+                    <button onclick="handleLogin()"
+                        class="w-full bg-white text-blue-600 font-bold py-3 rounded-xl shadow-lg hover:bg-blue-50 transition-colors active:scale-95 duration-200">
+                        Masuk Sekarang
+                    </button>
+                </div>
+            </div>
+
+            <p class="relative z-10 mt-8 text-blue-100 text-xs opacity-60">© 2026 System Whitelist @sairi_dev</p>
+        </div>
+
+        <!-- PAGE: DASHBOARD -->
+        <div id="dashboardPage" class="hidden flex-col h-full bg-white transition-all duration-500">
+            <!-- Header Fixed -->
+            <div class="p-6 bg-white border-b sticky top-0 z-20">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Whitelist Management</h2>
+                    <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition-colors">
+                        <i class="bi bi-box-arrow-right text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="relative">
+                        <input type="number" id="newNumber" placeholder="Enter phone number"
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    </div>
+
+                    <button onclick="addNumber()"
+                        class="w-full bg-blue-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all">
+                        <i class="bi bi-plus-lg"></i>
+                        Add Number
+                    </button>
+
+                    <div class="relative pt-2">
+                        <i class="bi bi-search absolute left-4 top-[22px] text-gray-400"></i>
+                        <input type="text" id="searchInput" onkeyup="filterNumbers()" placeholder="Search numbers..."
+                            class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Scrollable -->
+            <div class="flex-1 overflow-y-auto custom-scroll p-6 pt-2">
+                <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    <table class="w-full text-left">
+                        <thead class="bg-blue-50">
+                            <tr>
+                                <th class="px-4 py-4 text-xs font-semibold text-blue-600 uppercase tracking-wider">
+                                    Number</th>
+                                <th
+                                    class="px-4 py-4 text-xs font-semibold text-blue-600 uppercase tracking-wider text-right">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="numberList" class="divide-y divide-gray-50">
+                            <!-- Data injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let numbers = <% - JSON.stringify(numbers) %>;
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 5 + 2 + 'px';
+                particle.style.width = size;
+                particle.style.height = size;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = Math.random() * 3 + 2 + 's';
+                particle.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const card = document.getElementById('loginCard');
+            const error = document.getElementById('errorMsg');
+
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                document.getElementById('loginPage').classList.add('opacity-0', 'pointer-events-none', '-translate-y-full');
+                setTimeout(() => {
+                    document.getElementById('loginPage').classList.add('hidden');
+                    document.getElementById('dashboardPage').classList.remove('hidden');
+                    renderNumbers();
+                }, 500);
+                localStorage.setItem('isLoggedIn', 'true');
+            } else {
+                card.classList.add('shake');
+                error.classList.remove('hidden');
+                setTimeout(() => {
+                    card.classList.remove('shake');
+                }, 500);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            document.getElementById('dashboardPage').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden', 'opacity-0', 'pointer-events-none', '-translate-y-full');
+            document.getElementById('username').value = "";
+            document.getElementById('password').value = "";
+            document.getElementById('errorMsg').classList.add('hidden');
+        }
+
+        function renderNumbers(data = numbers) {
+            const list = document.getElementById('numberList');
+            list.innerHTML = '';
+
+            data.forEach((num, index) => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-gray-50 transition-colors group";
+                row.innerHTML = `
+                    <td class="px-4 py-4">
+                        <span class="text-sm font-medium text-gray-700">${num}</span>
+                    </td>
+                    <td class="px-4 py-4 text-right">
+                        <div class="flex items-center justify-end gap-3">
+                            <span class="px-3 py-1 bg-green-100 text-green-600 text-[10px] font-bold uppercase rounded-full">whitelisted</span>
+                            <button onclick="deleteNumber(${index})" class="text-gray-300 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        async function addNumber() {
+            const input = document.getElementById('newNumber');
+            const number = input.value.trim();
+            if (number !== "") {
+                const res = await fetch('/api/whitelist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ number })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    numbers = data.numbers;
+                    input.value = "";
+                    renderNumbers();
+                }
+            }
+        }
+
+        async function deleteNumber(index) {
+            if (confirm("Hapus nomor ini dari whitelist?")) {
+                const res = await fetch('/api/whitelist/' + index, {
+                    method: 'DELETE'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    numbers = data.numbers;
+                    renderNumbers();
+                }
+            }
+        }
+
+        function filterNumbers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = numbers.filter(n => n.includes(query));
+            renderNumbers(filtered);
+        }
+
+        window.onload = () => {
+            createParticles();
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('dashboardPage').classList.remove('hidden');
+                renderNumbers();
+            }
+        };
+    </script>
+</body>
+
+</html>
