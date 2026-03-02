@@ -1,6 +1,5 @@
 import express from 'express'
 import fs from 'fs'
-import chalk from 'chalk'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -8,39 +7,38 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const port = 3000
 
-// ✅ Set views directory dengan path absolut
+// Views
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
-// ✅ Gunakan built-in body parser (lebih modern)
+// Body parser
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
-// ✅ Path database absolut (penting saat deploy)
+// ⚠️ IMPORTANT:
+// Vercel filesystem itu ephemeral.
+// File write tidak akan permanen setelah cold start.
+
 const whitelistPath = path.join(__dirname, 'database', 'whitelist.json')
 
-// Pastikan folder database ada
-if (!fs.existsSync(path.join(__dirname, 'database'))) {
-    fs.mkdirSync(path.join(__dirname, 'database'))
-}
-
-// Pastikan file whitelist ada
-if (!fs.existsSync(whitelistPath)) {
-    fs.writeFileSync(whitelistPath, '[]')
-}
-
+// Safe read
 function getWhitelist() {
     try {
+        if (!fs.existsSync(whitelistPath)) return []
         return JSON.parse(fs.readFileSync(whitelistPath, 'utf8'))
     } catch {
         return []
     }
 }
 
+// Safe write
 function saveWhitelist(data) {
-    fs.writeFileSync(whitelistPath, JSON.stringify(data, null, 2))
+    try {
+        fs.writeFileSync(whitelistPath, JSON.stringify(data, null, 2))
+    } catch (err) {
+        console.log("Write error:", err.message)
+    }
 }
 
 app.get('/', (req, res) => {
@@ -49,11 +47,12 @@ app.get('/', (req, res) => {
 
 app.post('/login', (req, res) => {
     const { username, password } = req.body
+
     if (username === 'admin' && password === 'admin') {
-        res.json({ success: true })
-    } else {
-        res.json({ success: false })
+        return res.json({ success: true })
     }
+
+    res.json({ success: false })
 })
 
 app.get('/api/whitelist', (req, res) => {
@@ -84,6 +83,5 @@ app.delete('/api/whitelist/:index', (req, res) => {
     res.json({ success: true, numbers: list })
 })
 
-app.listen(port, () => {
-    console.log(chalk.cyan(`\n🌐 Server management running on http://localhost:${port}`))
-})
+// ✅ WAJIB untuk Vercel
+export default app
